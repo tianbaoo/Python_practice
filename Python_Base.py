@@ -301,6 +301,208 @@
     else:
         anything
 
+# 32.for循环的元组赋值		
+    for (a, b) in [(1, 2), (3, 4)]:                   # 最简单的赋值
+    for ((a, b), c) in [((1, 2), 3), ((4, 5), 6)]:    # 自动解包赋值
+    for ((a, b), c) in [((1, 2), 3), ("XY", 6)]:      # 自动解包 a = X, b = Y, c = 6
+    for (a, *b) in [(1, 2, 3), (4, 5, 6)]:  	
+		
+    # 列表解析语法
+    M = [[1,2,3], [4,5,6], [7,8,9]]
+    res = [sum(row) for row in M]                     # G = [6, 15, 24] 一般的列表解析 生成一个列表
+    res = [c * 2 for c in 'spam']                     # ['ss', 'pp', 'aa', 'mm']
+    res = [a * b for a in [1, 2] for b in [4, 5]]     # 多解析过程 返回[1*4, 1*5, 2*4, 2*5]
+    res = [a for a in [1, 2, 3] if a < 2]             # 带判断条件的解析过程
+    res = [a if a > 0 else 0 for a in [-1, 0, 1]]     # 带判断条件的高级解析过程		
+		
+    # 带索引的列表解析：使用enumerate函数
+    for index, team in enumerate(["Packers", "49ers", "Ravens", "Patriots"]):
+        print(index, team)                            # 输出0, Packers \n 1, 49ers \n ......		
+		
+# 33.生成器表达式		
+	G = (sum(row) for row in M)                       # 使用小括号可以创建所需结果的生成器generator object
+    next(G), next(G), next(G)                         # 输出(6, 15, 24)	
+	G = {sum(row) for row in M}                       # G = {6, 15, 24} 解析语法还可以生成集合和字典	
+	G = {i:sum(M[i]) for i in range(3)}               # G = {0: 6, 1: 15, 2: 24}	
+		
+# 34.文档字符串:出现在Module的开端以及其中函数或类的开端 使用三重引号字符串
+    """
+    module document
+    """
+    def func():
+        """
+        function document
+        """
+        print()
+    class Employee(object):
+        """
+        class document
+        """
+        print()
+    print(func.__doc__)                # 输出函数文档字符串
+    print(Employee.__doc__)            # 输出类的文档字符串		
+		
+# 35.命名惯例
+    # 以单一下划线开头的变量名(_x)不会被from module import * 导入
+	# 前后有两个下划线的变量名(__x__)是系统定义的变量名，对解释器有特殊意义。
+	# 以两个下划线开头但不以两个下划线结尾的变量(__x),是类的本地私有变量。
 	
-# 未完，待续 2018.03.14
+# 36.列表解析 in成员关系测试 map sorted zip enumerate内置函数等都使用了迭代协议
+    'first line' in open('test.txt')   # in测试 返回True或False
+    list(map(str.upper, open('t')))    # map内置函数
+    sorted(iter([2, 5, 8, 3, 1]))      # sorted内置函数
+    list(zip([1, 2], [3, 4]))          # zip内置函数 [(1, 3), (2, 4)]
+
+# 37.获取列表的子表的方法:
+    x = [1,2,3,4,5,6]
+    x[:3]                              # 前3个[1,2,3]
+	x[1,-1]                            # 中间4个[2,3,4,5]
+	x[-3:]                             # 最后3个[4,5,6]
+	x[::2]                             # 奇数项[1,3,5]
+	x[1::2]                            # 偶数项[2,4,6]
+	
+# 38.手动迭代iter和next
+    L = [1,2,3]
+	P = iter(L)                        # P是L的迭代器
+    P.next()                           # 1
+    P.next()                           # 2
+    P.next()                           # 3
+    P.next()                           # 返回 Error:StopIteration
+
+# 39. Python中的可迭代对象
+    # 1.range迭代器
+    # 2.map、zip、filter迭代器
+    # 3.字典视图函数迭代器：D.keys()、D.items()
+	# 4.文件类型
+	
+# 40.函数相关的语句和表达式
+    myfunc('spam')                     # 函数调用
+    def myfunc():                      # 函数定义
+    return None                        # 函数返回值
+    global a                           # 全局变量
+    nonlocal x                         # 在函数或其他作用域中使用外层（非全局）变量
+    yield x                            # 生成器函数返回
+    lambda                             # 匿名函数		
+		
+# 41.Python函数变量名解析:LEGB原则，即:
+    """
+    local(functin) --> encloseing function locals --> global(module) --> build-in(python)
+    说明:以下边的函数maker为例 则相对于action而言 X为Local N为Encloseing
+    """		
+		
+# 42.嵌套函数举例:工厂函数
+    def maker(N):
+        def action(X):
+            return X ** N
+        return action
+    f = maker(2)                       # pass 2 to N
+    f(3)                               # 9, pass 3 to X		
+		
+# 43.嵌套函数举例:lambda实例		
+	def maker(N):
+        action = (lambda X:X**N)
+        return action
+    f = maker(2)
+    f(3)	
+		
+# 44.nonlocal和global语句的区别		
+    # nonlocal用于一个嵌套函数作用域的名称 例如：
+	start = 100
+	def tester(start):
+		def nested(label):
+			nonlocal start              # 指定start为tester函数内的local变量 而不是global变量start
+			print(label,start)
+			start+=3
+		return nested			
+
+    # global为全局的变量 即def之外的变量
+    def tester(start):
+        def nested(label):
+            global start               # 指定start为global变量start
+            print(label, start)
+            start += 3
+        return nested 
+# 45.函数参数，不可变参数通过“值”传递，可变参数通过“引用”传递
+    def f(a, b, c): print(a, b, c)
+    f(1, 2, 3)                         # 参数位置匹配
+    f(1, c = 3, b = 2)                 # 参数关键字匹配
+    def f(a, b=1, c=2): print(a, b, c)
+    f(1)                               # 默认参数匹配
+    f(1, 2)                            # 默认参数匹配
+    f(a = 1, c = 3)                    # 关键字参数和默认参数的混合
+    # Keyword-Only参数:出现在*args之后 必须用关键字进行匹配
+    def keyOnly(a, *b, c): print('')   # c就为keyword-only匹配 必须使用关键字c = value匹配
+    def keyOnly(a, *, b, c): ......    # b c为keyword-only匹配 必须使用关键字匹配
+    def keyOnly(a, *, b = 1): ......   # b有默认值 或者省略 或者使用关键字参数b = value
+
+# 46.可变参数匹配: * 和 **
+    def f(*args): print(args)          # 在元组中收集不匹配的位置参数
+    f(1, 2, 3)                         # 输出(1, 2, 3)
+    def f(**args): print(args)         # 在字典中收集不匹配的关键字参数
+    f(a = 1, b = 2)                    # 输出{'a':1, 'b':2}
+    def f(a, *b, **c): print(a, b, c)  # 两者混合使用
+    f(1, 2, 3, x=4, y=5)               # 输出1, (2, 3), {'x':4, 'y':5}
+
+# 47.函数调用时的参数解包: * 和 ** 分别解包元组和字典
+    func(1, *(2, 3))  <==>  func(1, 2, 3)
+    func(1, **{'c':3, 'b':2})  <==>  func(1, b = 2, c = 3)
+    func(1, *(2, 3), **{'c':3, 'b':2})  <==>  func(1, 2, 3, b = 2, c = 3)
+
+# 48.函数属性:(自己定义的)函数可以添加属性
+    def func():.....
+    func.count = 1                     # 自定义函数添加属性
+    print.count = 1                    # Error 内置函数不可以添加属性
+
+# 49.函数注解: 编写在def头部行 主要用于说明参数范围、参数类型、返回值类型等
+    def func(a:'spam', b:(1, 10), c:float) -> int :
+        print(a, b, c)
+    func.__annotations__               # {'c':<class 'float'>, 'b':(1, 10), 'a':'spam', 'return':<class 'int'>}
+    # 编写注解的同时 还是可以使用函数默认值 并且注解的位置位于=号的前边
+    def func(a:'spam'='a', b:(1, 10)=2, c:float=3) -> int :
+        print(a, b, c)
+
+# 50.匿名函数:lambda
+    f = lambda x,y,z : x + y + z       # 普通匿名函数，使用方法f(1, 2, 3)
+    f = lambda x = 1, y = 1: x + y     # 带默认参数的lambda函数
+    def action(x):                     # 嵌套lambda函数
+        return (lambda y : x + y)
+    f = lambda: a if xxx() else b      # 无参数的lambda函数，使用方法f()
+	
+# 51.lambda函数与map filter reduce函数的结合
+    list(map((lambda x:x+1),[1,2,3]))                    # [2, 3, 4]
+    list(filter((lambda x:x>0),range(-6,6)))             # [1, 2, 3, 4, 5]
+	functools.reduce((lambda x,y:x+y),[1,3,5])           # 9
+    functools.reduce((lambda x, y: x * y), [2, 3, 4])    # 24
+
+# 52.生成器函数:yield VS return
+	def gensquare(N):
+		for i in range(N):
+			yield i**2
+	for i in gensquare(5):
+		print(i,end=' ' )
+    x = gensquare(2)                   # x是一个生成对象
+    next(x)                            # 等同于x.__next__() 返回0
+    next(x)                            # 等同于x.__next__() 返回1
+    next(x)                            # 等同于x.__next__() 抛出异常StopIteration
+
+# 53.生成器表达式，小括号进行列表解析
+    G = (x**2 for x in range(3))       # 使用小括号可以创建所需结果的生成器对象
+	next(G),next(G),next(G)            # 和上述的生成器函数返回一致
+	
+    # 1.生成器函数/生成器表达式是单个迭代对象
+    G = (x**2 for i in range(4))
+	I1 = iter(G)                       # 这里实际上是iter(G) = G
+	next(I1)                           # 0
+	next(G)                            # 1
+	next(I1)                           # 4
+    
+	# 2.生成器不保留迭代后的结果
+	gen = (i for i in range(4))
+    2 in gen                           # True
+	3 in gen                           # True
+	1 in gen                           # 返回False，其实检测2的时候，1已经就不在生成器中了，即1已经被迭代过了，同理2、3也不在了
+
+
+	
+# 未完，待续 2018.03.15
 	
