@@ -502,7 +502,413 @@
 	3 in gen                           # True
 	1 in gen                           # 返回False，其实检测2的时候，1已经就不在生成器中了，即1已经被迭代过了，同理2、3也不在了
 
-
+# 54.本地变量是静态检测的
+    X = 22                             # 全局变量X的声明和定义
+	def test()
+	    print(X)                       # 如果没有下一句，该语句合法，打印全局变量X
+		X = 88                         # 这一句使得上一句非法，因为它使得X变成本地变量
+		# 上一句变成了打印一个未定义的本地变量（局部变量）X
+		if False:                      # 即使这样的语句 也会把print语句视为非法语句 因为:
+		    X = 88                     # Python会无视if语句而仍然声明了局部变量X
+    def test():                        # 改进
+        global X                       # 声明变量X为全局变量
+        print(X)                       # 打印全局变量X
+        X = 88                         # 改变全局变量X	
 	
-# 未完，待续 2018.03.15
+# 55.函数的默认值是在函数定义的时候实例化的，而不是在调用的时候
+    def foo(L=[]):
+        L.append(9)
+        print(L)
+    foo()                              # [9]		
+    foo()                              # [9,9]		
+    foo()                              # [9,9,9]		
+	def foo(L=None):
+		if L==None:
+			L = []
+		L.append(9)
+		print(L)
+		foo()                          # [9]
+		foo()                          # [9]
+		foo()                          # [9]
+    # 另外一个例子 参数的默认值为不可变的:
+    def foo(count=0):                  # 这里的0是数字, 是不可变的
+        count += 1
+        print(count)
+    foo()                              # 输出1
+    foo()                              # 还是输出1
+    foo(3)                             # 输出4
+    foo()                              # 还是输出1
+	
+# 56.函数例子
+    # 数学运算类
+    abs(x)                             # 求绝对值 参数可以是整型复数
+    divmod(x,y)                        # x除以y 返回（整数，余数）
+    float(x)                           # 将一个字符串或整型转为浮点数
+    int(x,[base])                      # 将一个字符串或浮点数转化为整型，base表示进制
+    long(x,[base])	                   # 将一个字符串或浮点数转化为整型，base表示进制
+	pow(x,y)                           # 返回x的y次幂
+	range(start,stop,step)             # 起始，结束，步长
+	round(x,[n])                       # 保留n位小数
+	sum(iterable,[start])              # 对序列求和，start为起始位置
+	bin(x)                             # 10转二进制
+	oct(x)                             # 10转八进制
+	hex(x)                             # 10转十六进制
+    chr(i)                             # 返回给定int类型对应的ASCII字符
+    unichr(i)                          # 返回给定int类型的unicode
+    ord(c)                             # 返回ASCII字符对应的整数
+    bool([x])                          # 将x转换为Boolean类型	
+	
+# 57.python的搜索路径
+    # (1)程序的主目录  (2)PYTHONPATH目录  (3)标准链接库目录  (4)任何.pth文件的内容
+	import sys
+    sys.path
+    sys.argv                            # 获得脚本的参数
+    sys.builtin_module_names            # 查找内建模块
+    sys.platform                        # 返回当前平台 出现如： "win32" "linux" "darwin"等
+    sys.modules                         # 查找已导入的模块
+    sys.modules.keys()
+    sys.stdout                          # stdout和stderr都是类文件对象,但是它们都是只写的.它们都没有 read 方法,只有 write 方法
+    sys.stdout.write("hello")
+    sys.stderr
+    sys.stdin
+	
+# 58.重载模块reload: 这是一个内置函数 而不是一条语句
+    from imp import reload
+    reload(module)	
+	
+# 59. __init__.py包文件:每个导入的包中都应该包含这么一个文件
+    """
+    该文件可以为空
+    首次进行包导入时 该文件会自动执行
+    高级功能:在该文件中使用__all__列表来定义包(目录)以from*的形式导入时 需要导入什么
+    """	
+	
+# 60.包相对导入:使用点号(.) 只能使用from语句
+    from . import spam                  # 导入当前目录下的spam模块（Python2: 当前目录下的模块, 直接导入即可）
+    from .spam import name              # 导入当前目录下的spam模块的name属性（Python2: 当前目录下的模块, 直接导入即可，不用加.）
+    from .. import spam                 # 导入当前目录的父目录下的spam模块
+    
+# 61.包相对导入与普通导入的区别
+    from string import *                # 这里导入的string模块为sys.path路径上的 而不是本目录下的string模块(如果存在也不是)
+    from .string import *               # 这里导入的string模块为本目录下的(不存在则导入失败) 而不是sys.path路径上的	
+	
+# 62.模块数据隐藏:最小化from*的破坏
+    _X                                  # 变量名前加下划线可以防止from*导入时该变量名被复制出去
+    __all__ = ['x', 'x1', 'x2']         # 使用__all__列表指定from*时复制出去的变量名(变量名在列表中为字符串形式)	
+	
+# 63.最普通的类
+    class C1(object):
+        spam = 42                       # 数据属性
+        def __init__(self, name):       # 函数属性:构造函数
+            self.name = name
+        def __del__(self):              # 函数属性:析构函数
+            print("goodbey ", self.name)    
+    I1 = C1('bob')	
+	
+# 64.Python的类没有基于参数的函数重载
+    class FirstClass(object):
+        def test(self, string):
+            print(string)
+        def test(self):                 # 此时类中只有一个test函数 即后者test(self) 它覆盖掉前者带参数的test函数
+            print("hello world")	
+	
+# 65.子类扩展父类: 尽量调用父类的方法
+    class Manager(Person):
+        def giveRaise(self, percent, bonus = .10):
+            self.pay = int(self.pay*(1 + percent + bonus))     # 不好的方式 复制粘贴父类代码
+            Person.giveRaise(self, percent + bonus)            # 好的方式 尽量调用父类方法	
+	
+# 66.类内省工具
+    bob = Person('bob')
+    bob.__class__                       # <class 'Person'>
+    bob.__class__.__name__              # 'Person'
+    bob.__dict__                        # {'pay':0, 'name':'bob', 'job':'Manager'}
+
+# 67.类方法调用的两种方式
+    instance.method(arg...)
+    class.method(instance, arg...)
+
+# 68.类的伪私有属性:使用__attr
+    class C1(object):
+        def __init__(self, name):
+            self.__name = name          # 此时类的__name属性为伪私有属性 原理 它会自动变成self._C1__name = name
+        def __str__(self):
+            return 'self.name = %s' % self.__name
+    I = C1('tom')
+    print(I)                            # 返回 self.name = tom
+    I.__name = 'jeey'                   # 这里无法访问 __name为伪私有属性
+    I._C1__name = 'jeey'                # 这里可以修改成功 self.name = jeey
+
+# 69.获取对象信息: 属性和方法
+    a = MyObject()
+    dir(a)                              # 使用dir函数
+    hasattr(a, 'x')                     # 测试是否有x属性或方法 即a.x是否已经存在
+    setattr(a, 'y', 19)                 # 设置属性或方法 等同于a.y = 19
+    getattr(a, 'z', 0)                  # 获取属性或方法 如果属性不存在 则返回默认值0
+    #这里有个小技巧，setattr可以设置一个不能访问到的属性，即只能用getattr获取
+    setattr(a, "can't touch", 100)      # 这里的属性名带有空格，不能直接访问
+    getattr(a, "can't touch", 0)        # 但是可以用getattr获取
+
+# 70.为类动态绑定属性或方法: MethodType方法
+    # 一般创建了一个class的实例后, 可以给该实例绑定任何属性和方法, 这就是动态语言的灵活性
+    class Student(object):
+        pass
+    s = Student()
+    s.name = 'Michael'                  # 动态给实例绑定一个属性
+    def set_age(self, age):             # 定义一个函数作为实例方法
+        self.age = age
+    from types import MethodType
+    s.set_age = MethodType(set_age, s)  # 给实例绑定一个方法 类的其他实例不受此影响
+    s.set_age(25)                       # 调用实例方法
+    Student.set_age = MethodType(set_age, Student)    # 为类绑定一个方法 类的所有实例都拥有该方法
+
+# 71.多重继承: "混合类", 搜索方式"从下到上 从左到右 广度优先"
+    class A(B, C):
+        pass
+
+# 72.类的继承和子类的初始化
+    # 1.子类定义了__init__方法时，若未显示调用基类__init__方法，python不会帮你调用。
+    # 2.子类未定义__init__方法时，python会自动帮你调用首个基类的__init__方法，注意是首个。
+    # 3.子类显示调用基类的初始化函数：
+    class FooParent(object):
+        def __init__(self, a):
+            self.parent = 'I\'m the Parent.'
+            print('Parent:a=' + str(a))
+        def bar(self, message):
+            print(message + ' from Parent')
+    class FooChild(FooParent):
+        def __init__(self, a):
+            FooParent.__init__(self, a)
+            print('Child:a=' + str(a))
+        def bar(self, message):
+            FooParent.bar(self, message)
+            print(message + ' from Child')
+    fooChild = FooChild(10)
+    fooChild.bar('HelloWorld')
+
+# 73.#实例方法 / 静态方法 / 类方法
+    class Methods(object):
+        def imeth(self, x): print(self, x)      # 实例方法：传入的是实例和数据，操作的是实例的属性
+        def smeth(x): print(x)                  # 静态方法：只传入数据 不传入实例，操作的是类的属性而不是实例的属性
+        def cmeth(cls, x): print(cls, x)        # 类方法：传入的是类对象和数据
+        smeth = staticmethod(smeth)             # 调用内置函数，也可以使用@staticmethod
+        cmeth = classmethod(cmeth)              # 调用内置函数，也可以使用@classmethod
+    obj = Methods()
+    obj.imeth(1)                                # 实例方法调用 <__main__.Methods object...> 1
+    Methods.imeth(obj, 2)                       # <__main__.Methods object...> 2
+    Methods.smeth(3)                            # 静态方法调用 3
+    obj.smeth(4)                                # 这里可以使用实例进行调用
+    Methods.cmeth(5)                            # 类方法调用 <class '__main__.Methods'> 5
+    obj.cmeth(6)                                # <class '__main__.Methods'> 6
+
+# 74.函数装饰器
+    @classmethod
+	def foo(x):
+	    print(x)
+	#等价于
+	def foo(x):
+	    print(x)
+	foo = classmethod(foo)
+	
+# 75.类修饰器:是它后边的类的运行时的声明 由@符号以及后边紧跟的"元函数"(metafunction)组成
+        def decorator(aClass):.....
+        @decorator
+        class C(object):....
+    # 等同于:
+        class C(object):....
+        C = decorator(C)
+# 76.限制class属性: __slots__属性
+    class Student(object):
+        __slots__ = ('name', 'age')             # 限制Student及其实例只能拥有name和age属性
+                                                # __slots__属性只对当前类起作用, 对其子类不起作用
+                                                # __slots__属性能够节省内存
+                                                # __slots__属性可以为列表list，或者元组tuple
+
+# 77.类属性高级话题: @property
+    # 假设定义了一个类:C，该类必须继承自object类，有一私有变量__x
+    class C(object):
+        def __init__(self):
+            self.__x = None
+    # 第一种使用属性的方法
+        def getx(self):
+            return self.__x
+        def setx(self, value):
+            self.__x = value
+        def delx(self):
+            del self.__x
+        x = property(getx, setx, delx, '')
+    # property函数原型为property(fget=None,fset=None,fdel=None,doc=None)
+    # 使用
+    c = C()
+    c.x = 100                         # 自动调用setx方法
+    y = c.x                           # 自动调用getx方法
+    del c.x                           # 自动调用delx方法
+    # 第二种方法使用属性的方法
+        @property
+        def x(self):
+            return self.__x
+        @x.setter
+        def x(self, value):
+           self.__x = value
+        @x.deleter
+        def x(self):
+           del self.__x
+    # 使用
+    c = C()
+    c.x = 100                         # 自动调用setter方法
+    y = c.x                           # 自动调用x方法
+    del c.x                           # 自动调用deleter方法
+
+# 78.定制类: 重写类的方法
+    # (1)__str__方法、__repr__方法: 定制类的输出字符串
+    # (2)__iter__方法、next方法: 定制类的可迭代性
+    class Fib(object):
+        def __init__(self):
+            self.a, self.b = 0, 1     # 初始化两个计数器a，b
+        def __iter__(self):
+            return self               # 实例本身就是迭代对象，故返回自己
+        def next(self):
+            self.a, self.b = self.b, self.a + self.b
+            if self.a > 100000:       # 退出循环的条件
+                raise StopIteration()
+            return self.a             # 返回下一个值
+    for n in Fib():
+        print(n)                      # 使用
+    # (3)__getitem__方法、__setitem__方法: 定制类的下标操作[] 或者切片操作slice
+    class Indexer(object):
+        def __init__(self):
+            self.data = {}
+        def __getitem__(self, n):             # 定义getitem方法
+            print('getitem:', n)                
+            return self.data[n]
+        def __setitem__(self, key, value):    # 定义setitem方法
+            print('setitem:key = {0}, value = {1}'.format(key, value))
+            self.data[key] = value
+    test = Indexer()
+    test[0] = 1;   test[3] = '3'              # 调用setitem方法
+    print(test[0])                            # 调用getitem方法
+    # (4)__getattr__方法: 定制类的属性操作
+    class Student(object):
+        def __getattr__(self, attr):          # 定义当获取类的属性时的返回值
+            if attr=='age':
+                return 25                     # 当获取age属性时返回25
+        raise AttributeError('object has no attribute: %s' % attr)
+        # 注意: 只有当属性不存在时 才会调用该方法 且该方法默认返回None 需要在函数最后引发异常
+    s = Student()
+    s.age                                     # s中age属性不存在 故调用__getattr__方法 返回25
+    # (5)__call__方法: 定制类的'可调用'性
+    class Student(object):
+        def __call__(self):                   # 也可以带参数
+            print('Calling......')
+    s = Student()
+    s()                                       # s变成了可调用的 也可以带参数
+    callable(s)                               # 测试s的可调用性 返回True
+    #    (6)__len__方法：求类的长度
+    def __len__(self):
+        return len(self.data)
+
+# 79.动态创建类type()
+    # 一般创建类 需要在代码中提前定义
+        class Hello(object):
+            def hello(self, name='world'):
+                print('Hello, %s.' % name)
+        h = Hello()
+        h.hello()                             # Hello, world
+        type(Hello)                           # Hello是一个type类型 返回<class 'type'>
+        type(h)                               # h是一个Hello类型 返回<class 'Hello'>
+    # 动态类型语言中 类可以动态创建 type函数可用于创建新类型
+        def fn(self, name='world'):           # 先定义函数
+            print('Hello, %s.' % name)
+        Hello = type('Hello', (object,), dict(hello=fn))    # 创建Hello类 type原型: type(name, bases, dict)
+        h = Hello()                           # 此时的h和上边的h一致
+
+# 80.with/as环境管理器:作为常见的try/finally用法模式的替代方案
+    with expression [as variable], expression [as variable]:
+    # 例子:
+        with open('test.txt') as myfile:
+            for line in myfile: print(line)
+    # 等同于:
+        myfile = open('test.txt')
+        try:
+            for line in myfile: print(line)
+        finally:
+            myfile.close()
+
+# 81.Python的字符串类型
+    """Python2.x"""
+    # 1.str表示8位文本和二进制数据
+    # 2.unicode表示宽字符Unicode文本
+    """Python3.x"""
+    # 1.str表示Unicode文本（8位或者更宽）
+    # 2.bytes表示不可变的二进制数据
+    # 3.bytearray是一种可变的bytes类型
+
+# 82.Python3.x中的字符串应用
+    s = '...'                     # 构建一个str对象，不可变对象
+    b = b'...'                    # 构建一个bytes对象，不可变对象
+    s[0], b[0]                    # 返回('.', 113)
+    s[1:], b[1:]                  # 返回('..', b'..')
+    B = B"""
+        xxxx
+        yyyy
+        """
+    # B = b'\nxxxx\nyyyy\n'
+    # 编码，将str字符串转化为其raw bytes形式：
+        str.encode(encoding = 'utf-8', errors = 'strict')
+        bytes(str, encoding)
+    # 编码例子：
+        S = 'egg'
+        S.encode()                    # b'egg'
+        bytes(S, encoding = 'ascii')  # b'egg'
+    # 解码，将raw bytes字符串转化为str形式：
+        bytes.decode(encoding = 'utf-8', errors = 'strict')
+        str(bytes_or_buffer[, encoding[, errors]])
+    # 解码例子：
+        B = b'spam'
+        B.decode()                # 'spam'
+        str(B)                    # "b'spam'"，不带编码的str调用，结果为打印该bytes对象
+        str(B, encoding = 'ascii')# 'spam'，带编码的str调用，结果为转化该bytes对象
+
+# 83.Python2.x的编码问题
+    u = u'汉'
+    print repr(u)                 # u'\xba\xba'
+    s = u.encode('UTF-8')
+    print repr(s)                 # '\xc2\xba\xc2\xba'
+    u2 = s.decode('UTF-8')
+    print repr(u2)                # u'\xba\xba'
+    # 对unicode进行解码是错误的
+    s2 = u.decode('UTF-8')        # UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
+    # 同样，对str进行编码也是错误的
+    u2 = s.encode('UTF-8')        # UnicodeDecodeError: 'ascii' codec can't decode byte 0xc2 in position 0: ordinal not in range(128)
+
+# 84.bytes对象
+    B = b'abc'
+    B = bytes('abc', 'ascii')
+    B = bytes([97, 98, 99])
+    B = 'abc'.encode()
+    # bytes对象的方法调用基本和str类型一致 但:B[0]返回的是ASCII码值97, 而不是b'a'
+
+# 85.Python实现任意深度的赋值 例如a[0] = 'value1'; a[1][2] = 'value2'; a[3][4][5] = 'value3'
+    class MyDict(dict):
+        def __setitem__(self, key, value):                 # 该函数不做任何改动 这里只是为了输出
+            print('setitem:', key, value, self)
+            super().__setitem__(key, value)
+        def __getitem__(self, item):                       # 主要技巧在该函数
+            print('getitem:', item, self)                  # 输出信息
+            # 基本思路: a[1][2]赋值时 需要先取出a[1] 然后给a[1]的[2]赋值
+            if item not in self:                           # 如果a[1]不存在 则需要新建一个dict 并使得a[1] = dict
+                temp = MyDict()                            # 新建的dict: temp
+                super().__setitem__(item, temp)            # 赋值a[1] = temp
+                return temp                                # 返回temp 使得temp[2] = value有效
+            return super().__getitem__(item)               # 如果a[1]存在 则直接返回a[1]
+    # 例子:
+        test = MyDict()
+        test[0] = 'test'
+        print(test[0])
+        test[1][2] = 'test1'
+        print(test[1][2])
+        test[1][3] = 'test2'
+        print(test[1][3])	
+	
+# 完结 2018.03.16
 	
