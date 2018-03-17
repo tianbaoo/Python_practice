@@ -7,3 +7,5 @@
 2018.03.16             算法 [构建堆](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BinaryHeap.py)  
 2018.03.16             算法 [二分查找](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BinarySearch.py)  
 2018.03.16             算法 [二叉树](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BinaryTree.py)  
+2018.03.17             算法 [冒泡排序](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BubbleSort.py)  
+2018.03.17             算法 [英语单词拼写检查算法](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/CheckErrorWord.py)  
