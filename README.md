@@ -10,3 +10,4 @@
 算法 [冒泡排序](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BubbleSort.py)  
 算法 [英语单词拼写检查算法](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/CheckErrorWord.py)  
 算法 [Hash及常见操作](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/Hash.py)  
+算法 [快排]()
