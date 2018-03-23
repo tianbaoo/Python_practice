@@ -10,4 +10,5 @@
 算法 [冒泡排序](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/BubbleSort.py)  
 算法 [英语单词拼写检查算法](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/CheckErrorWord.py)  
 算法 [Hash及常见操作](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/Hash.py)  
-算法 [快排](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/QuickSort.py)
+算法 [快排](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/QuickSort.py)  
+面试题 [替换空格](https://github.com/tianbaoo/Python_practice/blob/master/Algorithm/%E9%9D%A2%E8%AF%95%E9%A2%98/%E6%9B%BF%E6%8D%A2%E7%A9%BA%E6%A0%BC.py)
