@@ -472,10 +472,9 @@ nginx + django + uwsgi
 
 ## restful API
 [restful API](http://www.cnblogs.com/guotianbao/p/8547768.html)  
-
-[老男孩Python师兄面试题整理](http://www.cnblogs.com/guotianbao/p/8631395.html)  	
-[Python面试题](http://www.cnblogs.com/guotianbao/p/8182787.html)  	
-[python面试题2017](http://www.cnblogs.com/guotianbao/p/7902691.html)  	
+[老男孩Python师兄面试题整理](http://www.cnblogs.com/guotianbao/p/8631395.html)  
+[Python面试题](http://www.cnblogs.com/guotianbao/p/8182787.html)  
+[python面试题2017](http://www.cnblogs.com/guotianbao/p/7902691.html)  
 [python面试题的知识点](http://www.cnblogs.com/guotianbao/p/7894465.html)  
 
 	
